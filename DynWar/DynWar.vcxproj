@@ -47,7 +47,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
-    <ConfigurationType>Makefile</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -66,7 +66,23 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <NMakeIncludeSearchPath>\\CC-ALICE\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="DevicePCAPOnline.cpp" />
+    <ClCompile Include="DevicePCAPOffline.cpp" />
+    <ClCompile Include="dynwar.cpp" />
+    <ClCompile Include="IODevice.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DevicePCAPOnline.h" />
+    <ClInclude Include="DevicePCAPOffline.h" />
+    <ClInclude Include="dynwar.h" />
+    <ClInclude Include="IODevice.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dynwar.cd" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DevicePCAPOffline.cpp">
+      <Filter>Sourcefiles</Filter>
+    </ClCompile>
+    <ClCompile Include="IODevice.cpp">
+      <Filter>Sourcefiles</Filter>
+    </ClCompile>
+    <ClCompile Include="dynwar.cpp">
+      <Filter>Sourcefiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DevicePCAPOnline.cpp">
+      <Filter>Sourcefiles</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DevicePCAPOffline.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="dynwar.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="IODevice.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="DevicePCAPOnline.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dynwar.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Includes">
+      <UniqueIdentifier>{e01c3a55-baaa-413f-bed3-7251ab70ef3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sourcefiles">
+      <UniqueIdentifier>{277482c7-85e5-48f2-8918-42f08ee9ad07}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
