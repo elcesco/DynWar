@@ -68,23 +68,31 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <NMakeIncludeSearchPath>\\CC-ALICE\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <IncludePath>z:\;$(IncludePath);$(ISenseIncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="DevicePCAPOnline.cpp" />
     <ClCompile Include="DevicePCAPOffline.cpp" />
-    <ClCompile Include="dynwar.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="DynWarden.cpp" />
     <ClCompile Include="IODevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DevicePCAPOnline.h" />
     <ClInclude Include="DevicePCAPOffline.h" />
-    <ClInclude Include="dynwar.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="DynWarden.h" />
     <ClInclude Include="IODevice.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dynwar.cd" />
   </ItemGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <ClCompile>
+      <CppLanguageStandard>c++1y</CppLanguageStandard>
+      <AdditionalIncludeDirectories>Z:\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

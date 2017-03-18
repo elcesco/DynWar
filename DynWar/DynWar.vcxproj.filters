@@ -7,10 +7,13 @@
     <ClCompile Include="IODevice.cpp">
       <Filter>Sourcefiles</Filter>
     </ClCompile>
-    <ClCompile Include="dynwar.cpp">
+    <ClCompile Include="DevicePCAPOnline.cpp">
       <Filter>Sourcefiles</Filter>
     </ClCompile>
-    <ClCompile Include="DevicePCAPOnline.cpp">
+    <ClCompile Include="main.cpp">
+      <Filter>Sourcefiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DynWarden.cpp">
       <Filter>Sourcefiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -18,13 +21,16 @@
     <ClInclude Include="DevicePCAPOffline.h">
       <Filter>Includes</Filter>
     </ClInclude>
-    <ClInclude Include="dynwar.h">
-      <Filter>Includes</Filter>
-    </ClInclude>
     <ClInclude Include="IODevice.h">
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="DevicePCAPOnline.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="DynWarden.h">
       <Filter>Includes</Filter>
     </ClInclude>
   </ItemGroup>
