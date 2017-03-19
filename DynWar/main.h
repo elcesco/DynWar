@@ -5,11 +5,6 @@
 #include<memory>
 
 #include <stdio.h>
-#include <stdlib.h>
-#include "pcap\pcap.h"
-#include <errno.h>
-#include <linux\socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <pcap.h>
 
 #include"DynWarden.h"

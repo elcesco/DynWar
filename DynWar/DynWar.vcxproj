@@ -67,8 +67,10 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <NMakeIncludeSearchPath>\\CC-ALICE\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-    <IncludePath>z:\;$(IncludePath);$(ISenseIncludePath)</IncludePath>
+    <NMakeIncludeSearchPath>z:\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <IncludePath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;$(IncludePath);$(ISenseIncludePath)</IncludePath>
+    <RemoteCCompileToolExe>gcc</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>gcc</RemoteCppCompileToolExe>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="DevicePCAPOnline.cpp" />
@@ -90,8 +92,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
-      <AdditionalIncludeDirectories>Z:\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <ShowProgress>true</ShowProgress>
+    </Link>
+    <Link>
+      <VerboseOutput>true</VerboseOutput>
+    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
