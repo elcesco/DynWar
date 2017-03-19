@@ -41,8 +41,8 @@
   #include <sys/types.h>
   #include <sys/socket.h>  /* u_int, u_char etc. */
 #else /* UN*X */
-  #include <linux/types.h>
-  #include <linux/time.h>
+  #include <sys/types.h>
+  #include <time.h>
 #endif /* WIN32/MSDOS/UN*X */
 
 #ifndef PCAP_DONT_INCLUDE_PCAP_BPF_H

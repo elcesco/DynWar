@@ -293,7 +293,7 @@ struct sockaddr_in {
 #endif
 
 /* <asm/byteorder.h> contains the htonl type stuff.. */
-#include <i386-linux-gnu/asm/byteorder.h> 
+#include <asm/byteorder.h> 
 
 
 #endif /* _LINUX_IN_H */

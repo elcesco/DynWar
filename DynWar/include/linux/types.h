@@ -1,7 +1,7 @@
 #ifndef _LINUX_TYPES_H
 #define _LINUX_TYPES_H
 
-#include <linux/types.h>
+#include <asm-generic/types.h>
 
 #ifndef __ASSEMBLY__
 

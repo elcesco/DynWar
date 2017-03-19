@@ -145,10 +145,7 @@
    transitioned to use the new macro.  */
 #if (defined _BSD_SOURCE || defined _SVID_SOURCE) \
     && !defined _DEFAULT_SOURCE
-/* Don't #warn about _BSD_SOURCE || _SVID_SOURCE, as it breaks -Werror
-   and we don't have time to check/fix everything before vivid release
 # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
-*/
 # undef  _DEFAULT_SOURCE
 # define _DEFAULT_SOURCE	1
 #endif
@@ -356,7 +353,7 @@
 /* Major and minor version number of the GNU C library package.  Use
    these macros to test for features in specific releases.  */
 #define	__GLIBC__	2
-#define	__GLIBC_MINOR__	23
+#define	__GLIBC_MINOR__	24
 
 #define __GLIBC_PREREQ(maj, min) \
 	((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))

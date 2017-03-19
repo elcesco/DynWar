@@ -168,9 +168,9 @@ extern Imaging ImagingNewMap(const char* filename, int readonly,
                              const char* mode, int xsize, int ysize);
 
 extern Imaging ImagingNewPrologue(const char *mode,
-                                  unsigned xsize, unsigned ysize);
+                                  int xsize, int ysize);
 extern Imaging ImagingNewPrologueSubtype(const char *mode,
-                                  unsigned xsize, unsigned ysize,
+                                  int xsize, int ysize,
                                   int structure_size);
 extern Imaging ImagingNewEpilogue(Imaging im);
 
@@ -236,8 +236,7 @@ extern void ImagingError_Clear(void);
 typedef int (*ImagingTransformMap)(double* X, double* Y,
                                    int x, int y, void* data);
 typedef int (*ImagingTransformFilter)(void* out, Imaging im,
-                                      double x, double y,
-                                      void* data);
+                                      double x, double y);
 
 /* Image Manipulation Methods */
 /* -------------------------- */
@@ -286,28 +285,14 @@ extern Imaging ImagingPointTransform(
     Imaging imIn, double scale, double offset);
 extern Imaging ImagingPutBand(Imaging im, Imaging imIn, int band);
 extern Imaging ImagingRankFilter(Imaging im, int size, int rank);
-extern Imaging ImagingRotate(
-    Imaging imOut, Imaging imIn, double theta, int filter);
 extern Imaging ImagingRotate90(Imaging imOut, Imaging imIn);
 extern Imaging ImagingRotate180(Imaging imOut, Imaging imIn);
 extern Imaging ImagingRotate270(Imaging imOut, Imaging imIn);
 extern Imaging ImagingResample(Imaging imIn, int xsize, int ysize, int filter);
 extern Imaging ImagingTranspose(Imaging imOut, Imaging imIn);
-extern Imaging ImagingTransposeToNew(Imaging imIn);
-extern Imaging ImagingTransformPerspective(
-    Imaging imOut, Imaging imIn, int x0, int y0, int x1, int y1,
-    double a[8], int filter, int fill);
-extern Imaging ImagingTransformAffine(
-    Imaging imOut, Imaging imIn, int x0, int y0, int x1, int y1,
-    double a[6], int filter, int fill);
-extern Imaging ImagingTransformQuad(
-    Imaging imOut, Imaging imIn, int x0, int y0, int x1, int y1,
-    double a[8], int filter, int fill);
 extern Imaging ImagingTransform(
-    Imaging imOut, Imaging imIn, int x0, int y0, int x1, int y1,
-    ImagingTransformMap transform, void* transform_data,
-    ImagingTransformFilter filter, void* filter_data,
-    int fill);
+    Imaging imOut, Imaging imIn, int method, int x0, int y0, int x1, int y1,
+    double *a, int filter, int fill);
 extern Imaging ImagingUnsharpMask(
     Imaging imOut, Imaging im, float radius, int percent, int threshold);
 extern Imaging ImagingBoxBlur(Imaging imOut, Imaging imIn, float radius, int n);
@@ -338,12 +323,6 @@ extern Imaging ImagingChopXor(Imaging imIn1, Imaging imIn2);
 extern void ImagingCrack(Imaging im, int x0, int y0);
 
 /* Graphics */
-struct ImagingAffineMatrixInstance {
-    float a[9];
-};
-
-typedef struct ImagingAffineMatrixInstance *ImagingAffineMatrix;
-
 extern int ImagingDrawArc(Imaging im, int x0, int y0, int x1, int y1,
                           float start, float end, const void* ink, int op);
 extern int ImagingDrawBitmap(Imaging im, int x0, int y0, Imaging bitmap,
@@ -474,6 +453,7 @@ extern int ImagingZipDecode(Imaging im, ImagingCodecState state,
 			    UINT8* buffer, int bytes);
 extern int ImagingZipEncode(Imaging im, ImagingCodecState state,
 			    UINT8* buffer, int bytes);
+extern int ImagingZipEncodeCleanup(ImagingCodecState state);
 #endif
 
 typedef void (*ImagingShuffler)(UINT8* out, const UINT8* in, int pixels);
@@ -506,33 +486,18 @@ struct ImagingCodecStateInstance {
     int bits, bytes;
     UINT8 *buffer;
     void *context;
+    PyObject *fd;
 };
 
-/* Incremental encoding/decoding support */
-typedef struct ImagingIncrementalCodecStruct *ImagingIncrementalCodec;
 
-typedef int (*ImagingIncrementalCodecEntry)(Imaging im, 
-                                            ImagingCodecState state,
-                                            ImagingIncrementalCodec codec);
 
-enum {
-  INCREMENTAL_CODEC_READ = 1,
-  INCREMENTAL_CODEC_WRITE = 2
-};
+/* Codec read/write python fd */
+extern Py_ssize_t _imaging_read_pyFd(PyObject *fd, char* dest, Py_ssize_t bytes);
+extern Py_ssize_t _imaging_write_pyFd(PyObject *fd, char* src, Py_ssize_t bytes);
+extern int _imaging_seek_pyFd(PyObject *fd, Py_ssize_t offset, int whence);
+extern Py_ssize_t _imaging_tell_pyFd(PyObject *fd);
 
-enum {
-  INCREMENTAL_CODEC_NOT_SEEKABLE = 0,
-  INCREMENTAL_CODEC_SEEKABLE = 1
-};
 
-extern ImagingIncrementalCodec ImagingIncrementalCodecCreate(ImagingIncrementalCodecEntry codec_entry, Imaging im, ImagingCodecState state, int read_or_write, int seekable, int fd);
-extern void ImagingIncrementalCodecDestroy(ImagingIncrementalCodec codec);
-extern int ImagingIncrementalCodecPushBuffer(ImagingIncrementalCodec codec, UINT8 *buf, int bytes);
-extern Py_ssize_t ImagingIncrementalCodecRead(ImagingIncrementalCodec codec, void *buffer, size_t bytes);
-extern off_t ImagingIncrementalCodecSkip(ImagingIncrementalCodec codec, off_t bytes);
-extern Py_ssize_t ImagingIncrementalCodecWrite(ImagingIncrementalCodec codec, const void *buffer, size_t bytes);
-extern off_t ImagingIncrementalCodecSeek(ImagingIncrementalCodec codec, off_t bytes);
-extern size_t ImagingIncrementalCodecBytesInBuffer(ImagingIncrementalCodec codec);
 
 /* Errcodes */
 #define	IMAGING_CODEC_END	 1

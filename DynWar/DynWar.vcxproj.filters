@@ -16,6 +16,9 @@
     <ClCompile Include="DynWarden.cpp">
       <Filter>Sourcefiles</Filter>
     </ClCompile>
+    <ClCompile Include="ConfigurationManager.cpp">
+      <Filter>Sourcefiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DevicePCAPOffline.h">
@@ -31,6 +34,9 @@
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="DynWarden.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigurationManager.h">
       <Filter>Includes</Filter>
     </ClInclude>
   </ItemGroup>

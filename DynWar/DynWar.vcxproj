@@ -69,10 +69,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <NMakeIncludeSearchPath>z:\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <IncludePath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;$(IncludePath);$(ISenseIncludePath)</IncludePath>
-    <RemoteCCompileToolExe>gcc</RemoteCCompileToolExe>
-    <RemoteCppCompileToolExe>gcc</RemoteCppCompileToolExe>
+    <RemoteCCompileToolExe>g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>g++</RemoteCppCompileToolExe>
+    <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigurationManager.cpp" />
     <ClCompile Include="DevicePCAPOnline.cpp" />
     <ClCompile Include="DevicePCAPOffline.cpp" />
     <ClCompile Include="main.cpp" />
@@ -80,6 +82,7 @@
     <ClCompile Include="IODevice.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigurationManager.h" />
     <ClInclude Include="DevicePCAPOnline.h" />
     <ClInclude Include="DevicePCAPOffline.h" />
     <ClInclude Include="main.h" />
@@ -93,12 +96,15 @@
     <ClCompile>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Verbose>true</Verbose>
     </ClCompile>
     <Link>
       <ShowProgress>true</ShowProgress>
     </Link>
     <Link>
       <VerboseOutput>true</VerboseOutput>
+      <UnresolvedSymbolReferences>false</UnresolvedSymbolReferences>
+      <LibraryDependencies>pcap;%(LibraryDependencies)</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
