@@ -2,64 +2,91 @@
 
 using namespace std;
 
+// ***************************************************************************
+// PACKETHANDLER
+// ***************************************************************************
 void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet)
 {
-	cout << "DevicePCAPOffline: called back packetHandler..." << endl;
+	//cout << "DevicePCAPOffline: called back packetHandler..." << endl;
 
+	//FIXME: the switch block needs to move to the DynWarden class !!!
+
+	/* Ethernet protocol ID's */
 	const struct ether_header* ethernetHeader;
-	const struct ip* ipHeader;
-	const struct tcphdr* tcpHeader;
-	//char sourceIp[INET_ADDRSTRLEN];
-	//char destIp[INET_ADDRSTRLEN];
-	u_int sourcePort, destPort;
-	u_char *data;
-	int dataLength = 0;
-	string dataStr = "";
-
 	ethernetHeader = (struct ether_header*)packet;
-	//if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
-	//	ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
-	//	inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIp, INET_ADDRSTRLEN);
-	//	inet_ntop(AF_INET, &(ipHeader->ip_dst), destIp, INET_ADDRSTRLEN);
+	int ret = ntohs(ethernetHeader->ether_type);
+	switch (ret)
+	{
+	case ETHERTYPE_PUP: /* Xerox PUP */
+		cout << "Ethertype: PUP" << endl;
+		break;
+	case ETHERTYPE_SPRITE: /* Sprite */
+		cout << "Ethertype: SPRITE" << endl;
+		break;
+	case ETHERTYPE_IP: /* IP */
+		{
+		const struct ip* ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
 
-	//	if (ipHeader->ip_p == IPPROTO_TCP) {
-	//		tcpHeader = (tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip));
-	//		sourcePort = ntohs(tcpHeader->source);
-	//		destPort = ntohs(tcpHeader->dest);
-	//		data = (u_char*)(packet + sizeof(struct ether_header) + sizeof(struct ip) + sizeof(struct tcphdr));
-	//		dataLength = pkthdr->len - (sizeof(struct ether_header) + sizeof(struct ip) + sizeof(struct tcphdr));
+		char sourceIp[INET_ADDRSTRLEN];
+		char destIp[INET_ADDRSTRLEN];
 
-	//		// convert non-printable characters, other than carriage return, line feed,
-	//		// or tab into periods when displayed.
-	//		for (int i = 0; i < dataLength; i++) {
-	//			if ((data[i] >= 32 && data[i] <= 126) || data[i] == 10 || data[i] == 11 || data[i] == 13) {
-	//				dataStr += (char)data[i];
-	//			}
-	//			else {
-	//				dataStr += ".";
-	//			}
-	//		}
+		inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIp, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &(ipHeader->ip_dst), destIp, INET_ADDRSTRLEN);
 
-	//		// print the results
-	//		cout << sourceIp << ":" << sourcePort << " -> " << destIp << ":" << destPort << endl;
-	//		if (dataLength > 0) {
-	//			cout << dataStr << endl;
-	//		}
-	//	}
-	//}
-
+		cout << "Ethertype: IPv4" << " : ";
+		cout << "Source: " << sourceIp << " --> ";
+		cout << "Destination: " << destIp << endl;
+		}
+		break;
+	case ETHERTYPE_ARP: /* Address resolution */
+		cout << "Ethertype: ARP" << endl;
+		break;
+	case ETHERTYPE_REVARP: /* Reverse ARP */
+		cout << "Ethertype: Reverse ARP" << endl;
+		break;
+	case ETHERTYPE_AT: /* AppleTalk protocol */
+		cout << "Ethertype: AppleTalk" << endl;
+		break;
+	case ETHERTYPE_AARP: /* AppleTalk ARP */
+		cout << "Ethertype: AppleTalk ARP" << endl;
+		break;
+	case ETHERTYPE_VLAN: /* IEEE 802.1Q VLAN tagging */
+		cout << "Ethertype: VLAN" << endl;
+		break;
+	case ETHERTYPE_IPX: /* IPX */
+		cout << "Ethertype: IPX" << endl;
+		break;
+	case ETHERTYPE_IPV6: /* IP protocol version 6 */
+		cout << "Ethertype: IPv6" << endl;
+		break;
+	case ETHERTYPE_LOOPBACK: /* used to test interfaces */
+		cout << "Ethertype: LOOPBACK" << endl;
+		break;
+	default:
+		cout << "Unknown ETHERTYPE=" << ret << endl;
+		break;
+	}
 }
 
+// ***************************************************************************
+// CONSTRUCTOR
+// ***************************************************************************
 DevicePCAPOffline::DevicePCAPOffline()
 {
 	cout << "DevicePCAPOffline: Constructing DevicePCAPOffline()" << endl;
 }
 
+// ***************************************************************************
+// DECONSTRUCTOR
+// ***************************************************************************
 DevicePCAPOffline::~DevicePCAPOffline()
 {
 	cout << "DevicePCAPOffline: Destructing DevicePCAPOffline()" << endl;
 }
 
+// ***************************************************************************
+// OPEN
+// ***************************************************************************
 int DevicePCAPOffline::open()
 {
 	cout << "DevicePCAPOffline: Opening PCAP in offline mode" << endl;
@@ -74,11 +101,15 @@ int DevicePCAPOffline::open()
 		cout << "DevicePCAPOffline: pcap_open_offline() failed: " << errbuf << endl;
 		return 1;
 	}
+	_online = true;
 
 	cout << "DevicePCAPOffline: pcap_open_offline() succeeded: " << endl;
 	return 0;
 }
 
+// ***************************************************************************
+// CLOSE
+// ***************************************************************************
 int DevicePCAPOffline::close()
 {
 	cout << "DevicePCAPOffline: Closing PCAP in offline mode" << endl;
@@ -86,19 +117,26 @@ int DevicePCAPOffline::close()
 	// pcap_close() closes the files associated with pcap_descr and deallocates resources.  
 	if (pcap_descr != NULL) {
 		pcap_close(pcap_descr);
+		_online = false;
 		return 0;
 	}
 
 	return 1;
 }
 
+// ***************************************************************************
+// HASDATA
+// ***************************************************************************
 bool DevicePCAPOffline::hasData()
 {
-	cout << "DevicePCAPOffline: Checking of further data is available in pcap trace file" << endl;
+	//cout << "DevicePCAPOffline: Checking of further data is available in pcap trace file" << endl;
 
-	return true; //FIXME
+	return _online; //FIXME
 }
 
+// ***************************************************************************
+// ISONLINE
+// ***************************************************************************
 bool DevicePCAPOffline::isOnline()
 {
 	// For offline mode devices this functions returns the same as hasData(). However
@@ -106,20 +144,31 @@ bool DevicePCAPOffline::isOnline()
 	// further packets are simply not received yet. In this case we just have to wait
 	// for the next packet to arrive.
 
-	cout << "DevicePCAPOffline: Checking if we are still online" << endl;
+	//cout << "DevicePCAPOffline: Checking if we are still online" << endl;
 
-	return true; //FIXME
+	return _online;
 }
 
-int DevicePCAPOffline::getData()
+// ***************************************************************************
+// RECEIVE
+// ***************************************************************************
+int DevicePCAPOffline::receive()
 {
 	// start packet processing loop, just like live capture
-	if (pcap_loop(pcap_descr, 1, this->packetHandler, NULL) < 0) {
-		cout << "DevicePCAPOffline: pcap_loop() failed: " << pcap_geterr(pcap_descr);
+	int ret = pcap_dispatch(pcap_descr, 1, this->packetHandler, NULL);
+	if (ret < 0) {
+		cout << "DevicePCAPOffline: pcap_dispatch() failed: " << pcap_geterr(pcap_descr);
 		return 1;
+	}
+	else if (ret == 0) {
+		_online = false;
+		return -1;
 	}
 }
 
+// ***************************************************************************
+// GETINFO
+// ***************************************************************************
 int DevicePCAPOffline::getInfo()
 {
 
@@ -132,7 +181,7 @@ int DevicePCAPOffline::getInfo()
 	char errbuf[PCAP_ERRBUF_SIZE];
 	bpf_u_int32 netp; /* ip          */
 	bpf_u_int32 maskp;/* subnet mask */
-	//struct in_addr addr;
+	struct in_addr addr;
 
 	/* ask pcap to find a valid device for use to sniff on */
 	dev = pcap_lookupdev(errbuf);

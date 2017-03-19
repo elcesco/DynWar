@@ -20,8 +20,8 @@
 
 #include <features.h>
 #include <stdint.h>
-#include <linux\socket.h>
-#include <bits\types.h>
+#include <sys/socket.h>
+#include <bits/types.h>
 
 
 __BEGIN_DECLS
@@ -34,7 +34,7 @@ struct in_addr
   };
 
 /* Get system-specific definitions.  */
-//#include <bits/in.h>
+#include <bits/in.h>
 
 /* Standard well-defined IP protocols.  */
 enum

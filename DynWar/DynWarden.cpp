@@ -43,7 +43,7 @@ int DynWarden::start()
 		if (inputdevice->hasData()) {
 
 			// get packet
-			inputdevice->getData();
+			inputdevice->receive();
 
 			// Calculate Flow ID
 			//FIXME

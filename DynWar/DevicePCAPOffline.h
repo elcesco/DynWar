@@ -7,6 +7,7 @@ class DevicePCAPOffline :
 {
 private:
 	pcap_t *pcap_descr;
+	bool _online = false;
 
 public:
 	static void packetHandler(u_char * userData, const pcap_pkthdr * pkthdr, const u_char * packet);
@@ -19,7 +20,7 @@ public:
 	bool hasData();
 	bool isOnline();
 	
-	int getData();
+	int receive();
 	int getInfo();
 };
 

@@ -7,7 +7,11 @@
 
 #include <stdio.h>
 #include <pcap.h>
-//#include <arpa\inet.h>
+#include <net/ethernet.h>
+#include <netinet/ip.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
 
 #include"DynWarden.h"
 #include "ConfigurationManager.h"
@@ -17,3 +21,5 @@
 #include "DevicePCAPOnline.h"
 
 int main(int argc, char ** argv);
+
+
