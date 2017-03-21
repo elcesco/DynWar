@@ -2,7 +2,10 @@
 
 Set up VS enviroment:
 
-
+  sudo apt-get install openssh-server g++ gdb gdbserver
+ 
 libraries used:
- libssl1.0-dev
+
+  libpcap-dev
+  libssl1.0-dev
  
