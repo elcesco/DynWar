@@ -6,6 +6,13 @@ Set up VS enviroment:
  
 libraries used:
 
+  bison
+  flex
   libpcap-dev
   libssl1.0-dev
  
+
+
+Search for a specific file in packages: 
+
+  apt-file find <file>
