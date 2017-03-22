@@ -7,6 +7,8 @@ public:
 	DynWarden();
 	~DynWarden();
 	int start();
+
+	static void receive();
 	
 };
 

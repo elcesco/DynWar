@@ -19,6 +19,12 @@
     <ClCompile Include="ConfigurationManager.cpp">
       <Filter>Sourcefiles</Filter>
     </ClCompile>
+    <ClCompile Include="cuckoofilter-master\src\hashutil.cc">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClCompile>
+    <ClCompile Include="cuckoofilter-master\src\printutil.cc">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DevicePCAPOffline.h">
@@ -39,6 +45,33 @@
     <ClInclude Include="ConfigurationManager.h">
       <Filter>Includes</Filter>
     </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\bitsutil.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\cuckoofilter.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\debug.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\hashutil.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\packedtable.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\permencoding.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\printutil.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\simd-block.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
+    <ClInclude Include="cuckoofilter-master\src\singletable.h">
+      <Filter>Cuckoofilter Sourcefiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="dynwar.cd" />
@@ -49,6 +82,9 @@
     </Filter>
     <Filter Include="Sourcefiles">
       <UniqueIdentifier>{277482c7-85e5-48f2-8918-42f08ee9ad07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cuckoofilter Sourcefiles">
+      <UniqueIdentifier>{cc831fa1-fb63-46e0-b5f1-0937a36a4d96}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

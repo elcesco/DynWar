@@ -10,6 +10,7 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 	//cout << "DevicePCAPOffline: called back packetHandler..." << endl;
 
 	//FIXME: the switch block needs to move to the DynWarden class !!!
+	// DynWarden->receive();
 
 	/* Ethernet protocol ID's */
 	const struct ether_header* ethernetHeader;
@@ -73,7 +74,7 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 // ***************************************************************************
 DevicePCAPOffline::DevicePCAPOffline()
 {
-	cout << "DevicePCAPOffline: Constructing DevicePCAPOffline()" << endl;
+	// cout << "DevicePCAPOffline: Constructing DevicePCAPOffline()" << endl;
 }
 
 // ***************************************************************************
@@ -81,7 +82,7 @@ DevicePCAPOffline::DevicePCAPOffline()
 // ***************************************************************************
 DevicePCAPOffline::~DevicePCAPOffline()
 {
-	cout << "DevicePCAPOffline: Destructing DevicePCAPOffline()" << endl;
+	// cout << "DevicePCAPOffline: Destructing DevicePCAPOffline()" << endl;
 }
 
 // ***************************************************************************
@@ -103,7 +104,7 @@ int DevicePCAPOffline::open()
 	}
 	_online = true;
 
-	cout << "DevicePCAPOffline: pcap_open_offline() succeeded: " << endl;
+	//cout << "DevicePCAPOffline: pcap_open_offline() succeeded: " << endl;
 	return 0;
 }
 
@@ -129,8 +130,6 @@ int DevicePCAPOffline::close()
 // ***************************************************************************
 bool DevicePCAPOffline::hasData()
 {
-	//cout << "DevicePCAPOffline: Checking of further data is available in pcap trace file" << endl;
-
 	return _online; //FIXME
 }
 
@@ -143,9 +142,6 @@ bool DevicePCAPOffline::isOnline()
 	// in online mode there might be situations where the stream is still online and 
 	// further packets are simply not received yet. In this case we just have to wait
 	// for the next packet to arrive.
-
-	//cout << "DevicePCAPOffline: Checking if we are still online" << endl;
-
 	return _online;
 }
 

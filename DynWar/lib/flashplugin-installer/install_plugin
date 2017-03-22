@@ -1,0 +1,35 @@
+#!/bin/sh
+
+set -e
+
+flash_tarball="$1"
+
+FILENAME=adobe-flashplugin.tar.gz
+
+fp_exit_with_error() {
+	echo $1
+	echo "The Flash plugin is NOT installed."
+	exit 1
+}
+
+cd /var/cache/flashplugin-installer
+
+echo "Installing from local file $flash_tarball"
+cp -f -p "$flash_tarball" ${FILENAME}_TEMP
+mv -f ${FILENAME}_TEMP $FILENAME
+
+rm -rf adobe_flashplugin*/
+
+# unpacking and checking the plugin
+tar xzf $FILENAME || fp_exit_with_error "cannot unpack plugin"
+
+install -m 644 adobe-flashplugin*/amd64/libflashplayer.so /usr/lib/flashplugin-installer/
+rm -rf adobe-flashplugin*
+
+echo "Flash Plugin installed."
+
+update-alternatives --quiet --install "/usr/lib/mozilla/plugins/flashplugin-alternative.so" "mozilla-flashplugin" /usr/lib/flashplugin-installer/libflashplayer.so 50
+
+exit 0
+
+# vim: ts=2 sw=2

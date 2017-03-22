@@ -75,6 +75,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="ConfigurationManager.cpp" />
+    <ClCompile Include="cuckoofilter-master\src\hashutil.cc" />
+    <ClCompile Include="cuckoofilter-master\src\printutil.cc" />
     <ClCompile Include="DevicePCAPOnline.cpp" />
     <ClCompile Include="DevicePCAPOffline.cpp" />
     <ClCompile Include="main.cpp" />
@@ -83,6 +85,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigurationManager.h" />
+    <ClInclude Include="cuckoofilter-master\src\bitsutil.h" />
+    <ClInclude Include="cuckoofilter-master\src\cuckoofilter.h" />
+    <ClInclude Include="cuckoofilter-master\src\debug.h" />
+    <ClInclude Include="cuckoofilter-master\src\hashutil.h" />
+    <ClInclude Include="cuckoofilter-master\src\packedtable.h" />
+    <ClInclude Include="cuckoofilter-master\src\permencoding.h" />
+    <ClInclude Include="cuckoofilter-master\src\printutil.h" />
+    <ClInclude Include="cuckoofilter-master\src\simd-block.h" />
+    <ClInclude Include="cuckoofilter-master\src\singletable.h" />
     <ClInclude Include="DevicePCAPOnline.h" />
     <ClInclude Include="DevicePCAPOffline.h" />
     <ClInclude Include="main.h" />
