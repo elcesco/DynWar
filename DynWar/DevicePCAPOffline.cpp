@@ -16,12 +16,6 @@ void DevicePCAPOffline::dlt_EN10MB(const u_char * packet)
 	int ret = ntohs(ethernetHeader->ether_type);
 	switch (ret)
 	{
-	case ETHERTYPE_PUP: /* Xerox PUP */
-		cout << "Ethertype: PUP" << endl;
-		break;
-	case ETHERTYPE_SPRITE: /* Sprite */
-		cout << "Ethertype: SPRITE" << endl;
-		break;
 	case ETHERTYPE_IP: /* IP */
 	{
 		const struct ip* ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
@@ -37,30 +31,6 @@ void DevicePCAPOffline::dlt_EN10MB(const u_char * packet)
 		cout << "Destination: " << destIp << endl;
 	}
 	break;
-	case ETHERTYPE_ARP: /* Address resolution */
-		cout << "Ethertype: ARP" << endl;
-		break;
-	case ETHERTYPE_REVARP: /* Reverse ARP */
-		cout << "Ethertype: Reverse ARP" << endl;
-		break;
-	case ETHERTYPE_AT: /* AppleTalk protocol */
-		cout << "Ethertype: AppleTalk" << endl;
-		break;
-	case ETHERTYPE_AARP: /* AppleTalk ARP */
-		cout << "Ethertype: AppleTalk ARP" << endl;
-		break;
-	case ETHERTYPE_VLAN: /* IEEE 802.1Q VLAN tagging */
-		cout << "Ethertype: VLAN" << endl;
-		break;
-	case ETHERTYPE_IPX: /* IPX */
-		cout << "Ethertype: IPX" << endl;
-		break;
-	case ETHERTYPE_IPV6: /* IP protocol version 6 */
-		cout << "Ethertype: IPv6" << endl;
-		break;
-	case ETHERTYPE_LOOPBACK: /* used to test interfaces */
-		cout << "Ethertype: LOOPBACK" << endl;
-		break;
 	default:
 		cout << "Unknown ETHERTYPE=" << ret << endl;
 		break;
@@ -77,23 +47,21 @@ void DevicePCAPOffline::dlt_RAW(const u_char * packet)
 	inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIp, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &(ipHeader->ip_dst), destIp, INET_ADDRSTRLEN);
 
-	cout << "Ethertype: IPv4" << " : ";
-	cout << "Source: " << sourceIp << " --> ";
-	cout << "Destination: " << destIp << endl;
+	cout << "RAW IPv4 : Source: " << sourceIp << " --> Destination: " << destIp << endl;
 }
 
-// ***************************************************************************
-// PACKETHANDLER
+// ****************************************************************************
+// Static PACKETHANDLER which is called back by pcap library for each packet 
+// chunk.
 // ***************************************************************************
 void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet)
 {
 	//cout << "DevicePCAPOffline: called back packetHandler..." << endl;
 
-	// Let's check which link-layer header type we have here.
+	// Let's check which link-layer header type we have received. We can not 
+	// assume its always an Ethernet type.
 	pcap_data_t *pd = (pcap_data_t*) userData;
-	int ll_header = pcap_datalink(pd->nt->pcap_descr);
-	//cout << "DevicePCAPOffline: Datalink Header ... " << ll_header << endl;
-	switch (ll_header)
+	switch (pcap_datalink(pd->nt->pcap_descr))
 	{
 	case DLT_EN10MB:
 		pd->nt->dlt_EN10MB(packet);
@@ -104,14 +72,11 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 		break;
 
 	default:
-		cout << "DevicePCAPOffline: Error: Unknown datalink header." << ll_header << endl;
+		cout << "DevicePCAPOffline: Error: Unknown datalink header." << pcap_datalink(pd->nt->pcap_descr) << endl;
 		break;
 	}
 	
-	//FIXME: the switch block needs to move to the DynWarden class !!!
-	
-
-	//DynWarden->receivedPacket(etherHeader);
+	//((DynWarden) pd->nt->pWarden)->receivedPacket(packet);
 
 
 }
@@ -210,5 +175,7 @@ int DevicePCAPOffline::receivedPacket()
 		_online = false;
 		return -1;
 	}
+
+	return -1;
 }
 
