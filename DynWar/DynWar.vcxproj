@@ -51,7 +51,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
-    <ConfigurationType>Makefile</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -73,10 +73,12 @@
     <RemoteCppCompileToolExe>g++</RemoteCppCompileToolExe>
     <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <IncludePath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="ConfigurationManager.cpp" />
-    <ClCompile Include="cuckoofilter-master\src\hashutil.cc" />
-    <ClCompile Include="cuckoofilter-master\src\printutil.cc" />
     <ClCompile Include="DevicePCAPOnline.cpp" />
     <ClCompile Include="DevicePCAPOffline.cpp" />
     <ClCompile Include="main.cpp" />
@@ -85,15 +87,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigurationManager.h" />
-    <ClInclude Include="cuckoofilter-master\src\bitsutil.h" />
-    <ClInclude Include="cuckoofilter-master\src\cuckoofilter.h" />
-    <ClInclude Include="cuckoofilter-master\src\debug.h" />
-    <ClInclude Include="cuckoofilter-master\src\hashutil.h" />
-    <ClInclude Include="cuckoofilter-master\src\packedtable.h" />
-    <ClInclude Include="cuckoofilter-master\src\permencoding.h" />
-    <ClInclude Include="cuckoofilter-master\src\printutil.h" />
-    <ClInclude Include="cuckoofilter-master\src\simd-block.h" />
-    <ClInclude Include="cuckoofilter-master\src\singletable.h" />
     <ClInclude Include="DevicePCAPOnline.h" />
     <ClInclude Include="DevicePCAPOffline.h" />
     <ClInclude Include="main.h" />
@@ -105,9 +98,10 @@
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
-      <CppLanguageStandard>c++1y</CppLanguageStandard>
+      <CppLanguageStandard>gnu++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Verbose>true</Verbose>
+      <CLanguageStandard>Default</CLanguageStandard>
     </ClCompile>
     <Link>
       <ShowProgress>true</ShowProgress>
@@ -115,7 +109,20 @@
     <Link>
       <VerboseOutput>true</VerboseOutput>
       <UnresolvedSymbolReferences>false</UnresolvedSymbolReferences>
-      <LibraryDependencies>pcap;%(LibraryDependencies)</LibraryDependencies>
+      <LibraryDependencies>pcap;ssl;crypto;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <ClCompile>
+      <CLanguageStandard>gnu11</CLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++1y</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>pcap ssl cypto</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

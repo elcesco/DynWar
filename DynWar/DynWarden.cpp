@@ -28,11 +28,11 @@ int DynWarden::start()
 	//CuckooFilter<size_t, 12> filter(total_items);
 
 	// a) innocent flows
-	// b) suspicious flows
+	innocent_table.clear();	// b) suspicious flows
 	//FIXME
 
 	// initialize input
-	IODevice* inputdevice = (IODevice*)(new DevicePCAPOffline());
+	IODevice* inputdevice = (IODevice*)(new DevicePCAPOffline( (char*) this));
 	inputdevice->open();
 
 	// initialize output
@@ -46,8 +46,8 @@ int DynWarden::start()
 		// is packet available ?
 		if (inputdevice->hasData()) {
 
-			// get packet
-			inputdevice->receive();
+			// enable packet receiver
+			inputdevice->receivedPacket();
 
 			// Calculate Flow ID
 			//FIXME
@@ -93,6 +93,9 @@ int DynWarden::start()
 	return 0;
 }
 
-void DynWarden::receive()
+void DynWarden::receivedPacket(ether_header* ethernetHeader)
 {
+	cout << "DynWarden::receivedPacket: " << ethernetHeader << endl;
+	
+	
 }

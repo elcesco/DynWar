@@ -2,19 +2,17 @@
 
 using namespace std;
 
-// ***************************************************************************
-// PACKETHANDLER
-// ***************************************************************************
-void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet)
+//! transfer data from static callback to procPacket method
+typedef struct
 {
-	//cout << "DevicePCAPOffline: called back packetHandler..." << endl;
+	DevicePCAPOffline *nt;
+} pcap_data_t;
 
-	//FIXME: the switch block needs to move to the DynWarden class !!!
-	// DynWarden->receive();
+void DevicePCAPOffline::dlt_EN10MB(const u_char * packet)
+{
+	const struct ether_header* ethernetHeader = (struct ether_header*) (packet);
 
 	/* Ethernet protocol ID's */
-	const struct ether_header* ethernetHeader;
-	ethernetHeader = (struct ether_header*)packet;
 	int ret = ntohs(ethernetHeader->ether_type);
 	switch (ret)
 	{
@@ -25,7 +23,7 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 		cout << "Ethertype: SPRITE" << endl;
 		break;
 	case ETHERTYPE_IP: /* IP */
-		{
+	{
 		const struct ip* ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
 
 		char sourceIp[INET_ADDRSTRLEN];
@@ -37,8 +35,8 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 		cout << "Ethertype: IPv4" << " : ";
 		cout << "Source: " << sourceIp << " --> ";
 		cout << "Destination: " << destIp << endl;
-		}
-		break;
+	}
+	break;
 	case ETHERTYPE_ARP: /* Address resolution */
 		cout << "Ethertype: ARP" << endl;
 		break;
@@ -69,10 +67,59 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 	}
 }
 
+void DevicePCAPOffline::dlt_RAW(const u_char * packet)
+{
+	const struct ip* ipHeader = (struct ip*)packet;
+
+	char sourceIp[INET_ADDRSTRLEN];
+	char destIp[INET_ADDRSTRLEN];
+
+	inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIp, INET_ADDRSTRLEN);
+	inet_ntop(AF_INET, &(ipHeader->ip_dst), destIp, INET_ADDRSTRLEN);
+
+	cout << "Ethertype: IPv4" << " : ";
+	cout << "Source: " << sourceIp << " --> ";
+	cout << "Destination: " << destIp << endl;
+}
+
+// ***************************************************************************
+// PACKETHANDLER
+// ***************************************************************************
+void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet)
+{
+	//cout << "DevicePCAPOffline: called back packetHandler..." << endl;
+
+	// Let's check which link-layer header type we have here.
+	pcap_data_t *pd = (pcap_data_t*) userData;
+	int ll_header = pcap_datalink(pd->nt->pcap_descr);
+	//cout << "DevicePCAPOffline: Datalink Header ... " << ll_header << endl;
+	switch (ll_header)
+	{
+	case DLT_EN10MB:
+		pd->nt->dlt_EN10MB(packet);
+		break;
+
+	case DLT_RAW:
+		pd->nt->dlt_RAW(packet);
+		break;
+
+	default:
+		cout << "DevicePCAPOffline: Error: Unknown datalink header." << ll_header << endl;
+		break;
+	}
+	
+	//FIXME: the switch block needs to move to the DynWarden class !!!
+	
+
+	//DynWarden->receivedPacket(etherHeader);
+
+
+}
+
 // ***************************************************************************
 // CONSTRUCTOR
 // ***************************************************************************
-DevicePCAPOffline::DevicePCAPOffline()
+DevicePCAPOffline::DevicePCAPOffline(char* dynwarden)
 {
 	// cout << "DevicePCAPOffline: Constructing DevicePCAPOffline()" << endl;
 }
@@ -148,10 +195,13 @@ bool DevicePCAPOffline::isOnline()
 // ***************************************************************************
 // RECEIVE
 // ***************************************************************************
-int DevicePCAPOffline::receive()
+int DevicePCAPOffline::receivedPacket()
 {
+	pcap_data_t pd;
+	pd.nt = this;
+
 	// start packet processing loop, just like live capture
-	int ret = pcap_dispatch(pcap_descr, 1, this->packetHandler, NULL);
+	int ret = pcap_dispatch(pcap_descr, 1, this->packetHandler, (u_char*) &pd );
 	if (ret < 0) {
 		cout << "DevicePCAPOffline: pcap_dispatch() failed: " << pcap_geterr(pcap_descr);
 		return 1;
@@ -162,35 +212,3 @@ int DevicePCAPOffline::receive()
 	}
 }
 
-// ***************************************************************************
-// GETINFO
-// ***************************************************************************
-int DevicePCAPOffline::getInfo()
-{
-
-	char *dev; /* name of the device to use */
-	char *net; /* dot notation of the network address */
-	char *mask;/* dot notation of the network mask    */
-	pcap_t* descr;
-	int ret;   /* return code */
-
-	char errbuf[PCAP_ERRBUF_SIZE];
-	bpf_u_int32 netp; /* ip          */
-	bpf_u_int32 maskp;/* subnet mask */
-	struct in_addr addr;
-
-	/* ask pcap to find a valid device for use to sniff on */
-	dev = pcap_lookupdev(errbuf);
-
-	/* error checking */
-	if (dev == NULL)
-	{
-		printf("%s\n", errbuf);
-		return 1;
-	}
-
-	/* ask pcap for the network address and mask of the device */
-	pcap_lookupnet(dev, &netp, &maskp, errbuf);
-
-	return 0;
-}

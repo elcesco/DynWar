@@ -8,6 +8,6 @@ public:
 	virtual int close() = 0;
 	virtual bool hasData() = 0;
 	virtual bool isOnline() = 0;
-	virtual int receive() = 0;
+	virtual int receivedPacket() = 0;
 };
 

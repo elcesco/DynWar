@@ -13,7 +13,7 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 
-#include "cuckoofilter-master/src/cuckoofilter.h"
+#include "libcuckoo/cuckoohash_map.hh"
 
 #include"DynWarden.h"
 #include "ConfigurationManager.h"
