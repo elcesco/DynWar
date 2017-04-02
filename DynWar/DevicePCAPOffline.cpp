@@ -76,7 +76,10 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 		break;
 	}
 	
-	//((DynWarden) pd->nt->pWarden)->receivedPacket(packet);
+	// FIXME: let the various dlt handler return the offset within packet
+	// so we can call the Warden and pass over the pointer to the IP datagram.
+
+	//((DynWarden) pd->nt->pWarden)->receivedPacket(&packet + offset);
 
 
 }
