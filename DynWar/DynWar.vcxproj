@@ -55,11 +55,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
-    <ConfigurationType>Makefile</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
-    <ConfigurationType>Makefile</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -74,6 +74,14 @@
     <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <IncludePath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -101,14 +109,14 @@
       <CppLanguageStandard>gnu++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Verbose>true</Verbose>
-      <CLanguageStandard>Default</CLanguageStandard>
+      <CLanguageStandard>gnu11</CLanguageStandard>
     </ClCompile>
     <Link>
       <ShowProgress>true</ShowProgress>
     </Link>
     <Link>
       <VerboseOutput>true</VerboseOutput>
-      <UnresolvedSymbolReferences>false</UnresolvedSymbolReferences>
+      <UnresolvedSymbolReferences>true</UnresolvedSymbolReferences>
       <LibraryDependencies>pcap;ssl;crypto;%(LibraryDependencies)</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -122,8 +130,39 @@
       <CppLanguageStandard>gnu++1y</CppLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>pcap ssl cypto</LibraryDependencies>
+      <LibraryDependencies>pcap;ssl;crypto;%(LibraryDependencies)</LibraryDependencies>
+      <ShowProgress>true</ShowProgress>
     </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Verbose>true</Verbose>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <CLanguageStandard>gnu11</CLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++1y</CppLanguageStandard>
+      <ShowIncludes>true</ShowIncludes>
+      <AdditionalIncludeDirectories>C:\Users\Francesco\Documents\Visual Studio 2017\Projects\DynWar\DynWar\DynWar\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>pcap;ssl;crypto;%(LibraryDependencies)</LibraryDependencies>
+      <ShowProgress>true</ShowProgress>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Link>
+      <LibraryDependencies>pcap;ssl;crypto;%(LibraryDependencies)</LibraryDependencies>
+      <ShowProgress>true</ShowProgress>
+    </Link>
+    <ClCompile>
+      <ShowIncludes>true</ShowIncludes>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

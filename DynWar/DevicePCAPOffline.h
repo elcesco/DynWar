@@ -1,4 +1,7 @@
 #pragma once
+
+#include "pcap.h"
+
 #include "IODevice.h"
 #include "main.h"
 
