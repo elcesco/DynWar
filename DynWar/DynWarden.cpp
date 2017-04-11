@@ -28,7 +28,7 @@ int DynWarden::start()
 	//CuckooFilter<size_t, 12> filter(total_items);
 
 	// a) innocent flows
-	innocent_table.clear();	// b) suspicious flows
+	//innocent_table.clear();	// b) suspicious flows
 	//FIXME
 
 	// initialize input
