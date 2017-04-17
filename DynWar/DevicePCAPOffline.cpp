@@ -1,8 +1,10 @@
+#include <cstdio>
+
 #include "DevicePCAPOffline.h"
 
 using namespace std;
 
-//! transfer data from static callback to procPacket method
+//! Used to transfer data from static callback to procPacket method
 typedef struct
 {
 	DevicePCAPOffline *nt;
@@ -18,7 +20,7 @@ void DevicePCAPOffline::dlt_EN10MB(const u_char * packet)
 	{
 	case ETHERTYPE_IP: /* IP */
 	{
-		const struct ip* ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
+		const struct ip* ipHeader = (struct ip*)(packet + sizeof(struct ether_header)-1);
 
 		char sourceIp[INET_ADDRSTRLEN];
 		char destIp[INET_ADDRSTRLEN];
@@ -47,7 +49,7 @@ void DevicePCAPOffline::dlt_RAW(const u_char * packet)
 	inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIp, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &(ipHeader->ip_dst), destIp, INET_ADDRSTRLEN);
 
-	cout << "RAW IPv4 : Source: " << sourceIp << " --> Destination: " << destIp << endl;
+	cout << printf("RAW IPv4 : Source: %*s  --> Destination: %s", 15, sourceIp, destIp) << endl;
 }
 
 // ****************************************************************************
@@ -56,11 +58,13 @@ void DevicePCAPOffline::dlt_RAW(const u_char * packet)
 // ***************************************************************************
 void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet)
 {
-	//cout << "DevicePCAPOffline: called back packetHandler..." << endl;
-
-	// Let's check which link-layer header type we have received. We can not 
-	// assume its always an Ethernet type.
+	// Received a packet from the input, so let's check
+	// which link-layer header type we have received.
+	// We can not assume its always an Ethernet type.
 	pcap_data_t *pd = (pcap_data_t*) userData;
+
+	cout << packet << endl;
+
 	switch (pcap_datalink(pd->nt->pcap_descr))
 	{
 	case DLT_EN10MB:
@@ -80,7 +84,6 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
 	// so we can call the Warden and pass over the pointer to the IP datagram.
 
 	//((DynWarden) pd->nt->pWarden)->receivedPacket(&packet + offset);
-
 
 }
 
@@ -119,7 +122,6 @@ int DevicePCAPOffline::open()
 	}
 	_online = true;
 
-	//cout << "DevicePCAPOffline: pcap_open_offline() succeeded: " << endl;
 	return 0;
 }
 

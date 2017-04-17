@@ -50,6 +50,8 @@ int DynWarden::start()
 			inputdevice->receivedPacket();
 
 			// Calculate Flow ID
+			long long int flowID = 0;
+
 			//FIXME
 
 			// Is this an innocent flow ID ?
