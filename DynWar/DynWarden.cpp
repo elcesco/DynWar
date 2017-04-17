@@ -1,19 +1,23 @@
 #include "DynWarden.h"
 
+DynWarden *DynWarden::s_instance = NULL;
+
 DynWarden::DynWarden()
 {
-	std::cout << "called DynWarden constructor ..." << std::endl;
-
 
 }
-
 
 DynWarden::~DynWarden()
 {
-	std::cout << "called DynWarden destructor." << std::endl;
 
 }
 
+DynWarden * DynWarden::getInstance() {
+    if (s_instance == NULL) {
+        s_instance = new DynWarden();
+    }
+    return s_instance;
+}
 
 int DynWarden::start()
 {
@@ -95,9 +99,9 @@ int DynWarden::start()
 	return 0;
 }
 
-void DynWarden::receivedPacket(ether_header* ethernetHeader)
+void DynWarden::receivedPacket(const u_char * IPPacket)
 {
-	cout << "DynWarden::receivedPacket: " << ethernetHeader << endl;
+	cout << "DynWarden::receivedPacket: " << IPPacket << endl;
 	
 	
 }
