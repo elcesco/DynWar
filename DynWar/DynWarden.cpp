@@ -161,19 +161,16 @@ unsigned __int128* DynWarden::getFlowIDv4(const ip* ipHeader) {
             break;
         }
 
-        case IPPROTO_IPV6:
-        case IPPROTO_ESP:
-        case IPPROTO_GRE:
-        case IPPROTO_AH:
-        default:
+        case IPPROTO_IPV6:  // may implement later
+        case IPPROTO_ESP:   // may implement later
+        case IPPROTO_GRE:   // may implement later
+        case IPPROTO_AH:    // may implement later
+        default:            // not implemented
         {
-            //cout << ipHeader->ip_p << " - Unhandled protocol when generating flow idf" << endl;
             return new unsigned __int128(0);
             break;
         }
     }
-
-    //TODO Get used port from sub protocols and add it to the flow id.
 
     return flowID;
 }
@@ -230,9 +227,11 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
 
                 // *************************************************************
                 // We have received an packet of an unknown flow. Let's check 
-                // with the sampling manager if this flow will get sampled.
+                // with the sampling manager if this flow sould get monitored.
                 // *************************************************************
-                if (SamplingMgr.consider(IPPacket)) {
+                if (SamplingMgr.consider(IPPacket)) { // yes, if the flow is 
+                                                      //sampled
+                    
                     // Add flow to suspicious flow filter.
                     if (suspiciousFlows->Contain(flowID) != cuckoofilter::Ok) {
                         printf("Error adding new flow to suspicious flow filter\n");
