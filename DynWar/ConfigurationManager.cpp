@@ -3,67 +3,66 @@
 // static
 ConfigurationManager *ConfigurationManager::s_instance = NULL;
 
-ConfigurationManager::ConfigurationManager()
-{
+ConfigurationManager::ConfigurationManager() {
 }
 
-ConfigurationManager::~ConfigurationManager()
-{
+ConfigurationManager::~ConfigurationManager() {
 }
 
-ConfigurationManager * ConfigurationManager::getInstance()
-{
-	if (s_instance == NULL) {
-		s_instance = new ConfigurationManager();
-	}
-	return s_instance;
+ConfigurationManager * ConfigurationManager::getInstance() {
+    if (s_instance == NULL) {
+        s_instance = new ConfigurationManager();
+    }
+    return s_instance;
 }
 
-bool ConfigurationManager::init(int argc, char * argv[])
-{
-	std::cout << "ConfigurationManager: initializing ..." << std::endl;
+bool ConfigurationManager::init(int argc, char * argv[]) {
 
-	if (argc < 7) {
-		cerr << "Usage: DynWar --sampler <sampling strategy> --input <inputfile> --output <output file>" << endl;
-		return false;
-	}
+    if (argc < 7) {
+        cerr << "Usage: DynWar --sampler <sampling strategy> --input <inputfile> --output <output file>" << endl;
+        cerr << "\n"
+                "Available sampling strategies:\n"
+                "\n"
+                "none                 No IP packet is inspected/normalized\n"
+                "SampleAndHold-10     tbd\n"
+                "SampleAndHold-50     tbd\n"
+                "\n" << endl;
+        return false;
+    }
 
-	for (int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
 
-		cout << i << ": " << argv[i] << " : ";
+        cout << i << ": " << argv[i] << " : ";
 
-		if (std::string(argv[i]) == "--sampler") {
-			config.samlingStrategy = argv[++i]; // Increment 'i' so we don't get the argument as the next argv[i].
-			//cout << config.samlingStrategy << endl;
-		}
+        if (std::string(argv[i]) == "--sampler") {
+            config.samlingStrategy = argv[++i]; // Increment 'i' so we don't get the argument as the next argv[i].
+            //cout << config.samlingStrategy << endl;
+        }
 
-		if (std::string(argv[i]) == "--input") {
-			config.inputfile = argv[++i];
-			//cout << config.inputfile << endl;
-		}
+        if (std::string(argv[i]) == "--input") {
+            config.inputfile = argv[++i];
+            //cout << config.inputfile << endl;
+        }
 
-		if (std::string(argv[i]) == "--output") {
-			config.outputfile = argv[++i];
-			//cout << config.outputfile << endl;
-		}
-	}
+        if (std::string(argv[i]) == "--output") {
+            config.outputfile = argv[++i];
+            //cout << config.outputfile << endl;
+        }
+    }
 
-	cout << endl;
+    cout << endl;
 
-	return true;
+    return true;
 }
 
-string ConfigurationManager::getInput()
-{
-	return string(config.inputfile);
+string ConfigurationManager::getInput() {
+    return string(config.inputfile);
 }
 
-string ConfigurationManager::getOutput()
-{
-	return string(config.outputfile);
+string ConfigurationManager::getOutput() {
+    return string(config.outputfile);
 }
 
-string ConfigurationManager::getSampler()
-{
-	return string(config.samlingStrategy);
+string ConfigurationManager::getSampler() {
+    return string(config.samlingStrategy);
 }

@@ -1,3 +1,6 @@
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+
 #include "IODevice.h"
 #include "DevicePCAPOffline.h"
 
@@ -13,10 +16,10 @@ DynWarden::DynWarden() {
     // *************************************************************************
     this->PacketCounter = 0;
     this->FlowCounter = 0;
-    
-    // *********************************************************************
+
+    // *************************************************************************
     // Instantiate the sampling manager
-    // *********************************************************************
+    // *************************************************************************
     std::unique_ptr<SamplingManager> _sampler(SamplingManager::getInstance());
 
 
@@ -27,7 +30,7 @@ DynWarden::~DynWarden() {
     // *************************************************************************
     // Output performance data
     // *************************************************************************
-    setlocale(LC_ALL,"");
+    setlocale(LC_ALL, "");
     printf("\n");
     printf("Performance data:\n");
     printf("=================\n");
@@ -45,7 +48,7 @@ DynWarden * DynWarden::getInstance() {
 
 int DynWarden::start() {
     std::cout << "starting dynamic warden..." << std::endl;
-    
+
     // *************************************************************************
     // Initialize cukoo filters for the list of innocent flows
     // when we find an innocent flow we will store its flow ID
@@ -98,7 +101,9 @@ int DynWarden::start() {
     return 0;
 }
 
-unsigned __int128* DynWarden::getFlowID(const ip* ipHeader) {
+unsigned __int128* DynWarden::getFlowIDv4(const ip* ipHeader) {
+
+    unsigned __int128 *flowID = new unsigned __int128(0);
 
     // *************************************************************************
     // Calculate Flow ID
@@ -113,16 +118,63 @@ unsigned __int128* DynWarden::getFlowID(const ip* ipHeader) {
     // 80 - 191 Destination Port
     // 96 - 127 reserved
 
-    unsigned __int128 *flowID = new unsigned __int128(0);
-
     *flowID += (uint32_t) ipHeader->ip_src.s_addr;
     *flowID = *flowID << 32;
 
     *flowID += (uint32_t) ipHeader->ip_dst.s_addr;
-    *flowID = *flowID << 32;
+    *flowID = *flowID << 16;
+
+    switch (ipHeader->ip_p) {
+
+        case IPPROTO_ICMP:
+        {
+            // Since there are no ports used in ICMP we will leave the fake port
+            // numbers at 0. 0 is an invalid port on TCP and UDP and should not
+            // generate any conflict with other flow id's.
+            *flowID = *flowID << 48;
+            break;
+        }
+
+        case IPPROTO_UDP:
+        {
+            udphdr* udpHeader = (udphdr*) ((char*) ipHeader + 20);
+            
+            *flowID += udpHeader->source;
+            *flowID = *flowID << 16;
+
+            *flowID += udpHeader->dest;
+            *flowID = *flowID << 32;
+
+            break;
+        }
+
+        case IPPROTO_TCP:
+        {
+            tcphdr* tcpHeader = (tcphdr*) ((char*) ipHeader + 20);
+
+            *flowID += tcpHeader->source;
+            *flowID = *flowID << 16;
+
+            *flowID += tcpHeader->dest;
+            *flowID = *flowID << 32;
+
+            break;
+        }
+
+        case IPPROTO_IPV6:
+        case IPPROTO_ESP:
+        case IPPROTO_GRE:
+        case IPPROTO_AH:
+        default:
+        {
+            //cout << ipHeader->ip_p << " - Unhandled protocol when generating flow idf" << endl;
+            return new unsigned __int128(0);
+            break;
+        }
+    }
 
     //TODO Get used port from sub protocols and add it to the flow id.
-    
+
     return flowID;
 }
 
@@ -136,58 +188,68 @@ void DynWarden::sendPacket(const u_char* IPPacket) {
 void DynWarden::receivedPacket(const u_char* IPPacket) {
 
     this->PacketCounter++;
-    
+
     const struct ip* ipHeader = (struct ip*) IPPacket;
 
-    // *************************************************************************
-    // Get unique Flow ID
-    // *************************************************************************
-    // the 128 bit value is a combination of specific packets field to generate
-    // an unique flow identifier.    
-    //unsigned __int128 *flowID = new unsigned __int128;
-    unsigned __int128 flowID = *getFlowID(ipHeader);
+    // Do we have an IPv4 packet ? If this is a IPv6 packet we skip the dynmica
+    // warden as IPv6 handling is not implemented yet.
+    if (ipHeader->ip_v == 4) {
 
-    // *************************************************************************
-    // Received an known innocent flow ?
-    // *************************************************************************
-    // If we can identify an innocent flow by its characteristics we will store
-    // its flowID so we can skip any further processing of the packet.
-    // *************************************************************************
-    if (innocentFlows->Contain(flowID) == cuckoofilter::Ok) {
-        sendPacket(IPPacket);
-        return;
-    }
+        // *********************************************************************
+        // Get unique Flow ID
+        // *********************************************************************
+        // the 128 bit value is a combination of specific packets field to 
+        // generate an unique flow identifier. When flow id = 0, we received an 
+        // protocol which is not implemented yet. In this case we skip further
+        // processing.    
+        unsigned __int128 flowID = *getFlowIDv4(ipHeader);
+        if (flowID != 0) {
 
-    // *************************************************************************
-    // Is this a known flow which is already under surveillance ? If so we will
-    // process the defined normalization rules on this packet before we proceed.
-    // *************************************************************************
-    if (suspiciousFlows->Contain(flowID) == cuckoofilter::Ok) {
-      
-        //TODO: Do the normalization job
-        
-    } else {
-        
-        // *********************************************************************
-        // We have received an packet of an unknown flow. Let's check with 
-        // the sampling manager if this flow will get sampled.
-        // *********************************************************************
-        if (SamplingMgr.consider(IPPacket)) {
-            // Add flow to suspicious flow filter.
-            if (suspiciousFlows->Contain(flowID) != cuckoofilter::Ok) {
-                printf("Error adding new flow to suspicious flow filter\n");
-            } else {
-                this->FlowCounter++;
+            // *****************************************************************
+            // Received an known innocent flow ?
+            // *****************************************************************
+            // If we can identify an innocent flow by its characteristics we 
+            // will store its flowID so we can skip any further processing of 
+            // the packet.
+            // *****************************************************************
+            if (innocentFlows->Contain(flowID) == cuckoofilter::Ok) {
+                sendPacket(IPPacket);
+                return;
             }
- 
-            //TODO: Do the normalization job
 
+            // *****************************************************************
+            // Is this a known flow which is already under surveillance ? If so 
+            // we will process the defined normalization rules on this packet 
+            // before we proceed.
+            // *****************************************************************
+            if (suspiciousFlows->Contain(flowID) == cuckoofilter::Ok) {
+
+                //TODO: Do the normalization job
+
+            } else {
+
+                // *************************************************************
+                // We have received an packet of an unknown flow. Let's check 
+                // with the sampling manager if this flow will get sampled.
+                // *************************************************************
+                if (SamplingMgr.consider(IPPacket)) {
+                    // Add flow to suspicious flow filter.
+                    if (suspiciousFlows->Contain(flowID) != cuckoofilter::Ok) {
+                        printf("Error adding new flow to suspicious flow filter\n");
+                    } else {
+                        this->FlowCounter++;
+                    }
+
+                    //TODO: Do the normalization job
+
+                }
+            }
         }
-    }  
+    }
 
     // *************************************************************************
     // When all processing is completed we will send this packet to the output
     // *************************************************************************
     sendPacket(IPPacket);
-    
+
 }
