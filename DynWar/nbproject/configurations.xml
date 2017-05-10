@@ -8,6 +8,7 @@
       <itemPath>DevicePCAPOffline.h</itemPath>
       <itemPath>DynWarden.h</itemPath>
       <itemPath>IODevice.h</itemPath>
+      <itemPath>NormalizeManager.h</itemPath>
       <itemPath>SamplingManager.h</itemPath>
       <itemPath>main.h</itemPath>
     </logicalFolder>
@@ -22,6 +23,7 @@
       <itemPath>DevicePCAPOffline.cpp</itemPath>
       <itemPath>DynWarden.cpp</itemPath>
       <itemPath>IODevice.cpp</itemPath>
+      <itemPath>NormalizeManager.cpp</itemPath>
       <itemPath>SamplingManager.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -78,6 +80,10 @@
       <item path="IODevice.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="IODevice.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="NormalizeManager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NormalizeManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="SamplingManager.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -137,6 +143,10 @@
       <item path="IODevice.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="IODevice.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="NormalizeManager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NormalizeManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="SamplingManager.cpp" ex="false" tool="1" flavor2="0">
       </item>

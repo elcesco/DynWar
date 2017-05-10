@@ -3,6 +3,7 @@
 
 #include "IODevice.h"
 #include "DevicePCAPOffline.h"
+#include "NormalizeManager.h"
 
 #include "DynWarden.h"
 
@@ -58,10 +59,10 @@ int DynWarden::start() {
     // to be a strange workaround by utilizing another variable
     // *************************************************************************
 
-    CuckooFilter<unsigned __int128, 32, cuckoofilter::SingleTable > a_flows(1000000);
+    cuckoofilter::CuckooFilter<unsigned __int128, 32, cuckoofilter::SingleTable > a_flows(1000000);
     this->innocentFlows = &a_flows;
 
-    CuckooFilter<unsigned __int128, 32, cuckoofilter::SingleTable > b_flows(1000000);
+    cuckoofilter::CuckooFilter<unsigned __int128, 32, cuckoofilter::SingleTable > b_flows(1000000);
     this->suspiciousFlows = &b_flows;
 
     // Initialize cuckoo based map to store any suspicious flow ID
@@ -221,6 +222,9 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
             // *****************************************************************
             if (suspiciousFlows->Contain(flowID) == cuckoofilter::Ok) {
 
+                // Lookup FlowInfo - datastructure to keep information on the 
+                // various attributes and characterisitics of the IP flow.
+                
                 //TODO: Do the normalization job
 
             } else {
@@ -239,7 +243,12 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
                         this->FlowCounter++;
                     }
 
-                    //TODO: Do the normalization job
+                    // Pass IP packet to the normalizer component to execute 
+                    // the various normalization techniques.
+                    uint64_t* techVector;
+                    *techVector = 1;
+                    
+                    NormManager.clean( IPPacket);
 
                 }
             }
