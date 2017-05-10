@@ -237,19 +237,17 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
                                                       //sampled
                     
                     // Add flow to suspicious flow filter.
-                    if (suspiciousFlows->Contain(flowID) != cuckoofilter::Ok) {
-                        printf("Error adding new flow to suspicious flow filter\n");
+                    if (suspiciousFlows->Add(flowID) != cuckoofilter::Ok) {
+                        //printf("Error adding new flow to suspicious flow filter\n");
                     } else {
                         this->FlowCounter++;
+
+                        // Pass IP packet to the normalizer component to execute 
+                        // the various normalization techniques.
+                        uint64_t* techVector = new u_int64_t(1);
+
+                        NormManager.clean( techVector, IPPacket);
                     }
-
-                    // Pass IP packet to the normalizer component to execute 
-                    // the various normalization techniques.
-                    uint64_t* techVector;
-                    *techVector = 1;
-                    
-                    NormManager.clean( IPPacket);
-
                 }
             }
         }

@@ -14,12 +14,14 @@
 #ifndef NORMALIZER_H
 #define NORMALIZER_H
 
+#include <cstdint>
+
 class NormalizeManager {
 public:
     NormalizeManager();
     virtual ~NormalizeManager();
     
-    bool clean(const u_char* IPPacket);
+    bool clean(const u_int64_t * techVector, const u_char* IPPacket);
     
 private:
 
