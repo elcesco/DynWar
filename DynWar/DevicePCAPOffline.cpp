@@ -127,40 +127,31 @@ int DevicePCAPOffline::close() {
 // HASDATA
 // ***************************************************************************
 
-bool DevicePCAPOffline::hasData() {
-    return _online; //FIXME
-}
-
-// ***************************************************************************
-// ISONLINE
-// ***************************************************************************
-
-bool DevicePCAPOffline::isOnline() {
-    // For offline mode devices this functions returns the same as hasData(). However
-    // in online mode there might be situations where the stream is still online and 
-    // further packets are simply not received yet. In this case we just have to wait
-    // for the next packet to arrive.
-    return _online;
-}
+//bool DevicePCAPOffline::hasData() {
+//    return _online; //FIXME
+//}
+//
+//// ***************************************************************************
+//// ISONLINE
+//// ***************************************************************************
+//
+//bool DevicePCAPOffline::isOnline() {
+//    // For offline mode devices this functions returns the same as hasData(). However
+//    // in online mode there might be situations where the stream is still online and 
+//    // further packets are simply not received yet. In this case we just have to wait
+//    // for the next packet to arrive.
+//    return _online;
+//}
 
 // ***************************************************************************
 // RECEIVE
 // ***************************************************************************
 
-int DevicePCAPOffline::receivedPacket() {
-
-    pd.deviceInstance = this;
+int DevicePCAPOffline::run() {
 
     // start packet processing loop, just like live capture
-    int ret = pcap_dispatch(pcap_descr, 1, this->packetHandler, (u_char*) & pd);
-    if (ret < 0) {
-        cout << "DevicePCAPOffline: pcap_dispatch() failed: " << pcap_geterr(pcap_descr);
-        return 1;
-    } else if (ret == 0) {
-        _online = false;
-        return -1;
-    }
-
-    return -1;
+    pd.deviceInstance = this;
+    
+    return pcap_dispatch(pcap_descr, 1, this->packetHandler, (u_char*) & pd);
 }
 

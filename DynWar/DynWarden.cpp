@@ -1,3 +1,4 @@
+#include<time.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 
@@ -35,8 +36,9 @@ DynWarden::~DynWarden() {
     printf("\n");
     printf("Performance data:\n");
     printf("=================\n");
-    printf("Packet Counter: %'d\n", this->PacketCounter);
-    printf("Flow Counter:   %'d\n", this->FlowCounter);
+    printf("Packet Counter:     %'d packets\n", PacketCounter);
+    printf("Flow Counter:       %'d flows\n", FlowCounter);
+    printf("Avg. Delay Counter: %'d ns\n", delayCounter);
 
 }
 
@@ -78,26 +80,19 @@ int DynWarden::start() {
     // *************************************************************************
     // initialize output
     // *************************************************************************
-    //IODevice* outputdevice = (IODevice*)(new DevicePCAPOffline());
-    //outputdevice->open();
-    //FIXME
+    IODevice* outputdevice = (IODevice*)(new DevicePCAPOffline());
+    outputdevice->open();
 
     // start processing incomming packets
     do {
-        // is packet available ?
-        if (inputdevice->hasData()) {
-
-            // enable packet receiver
-            inputdevice->receivedPacket();
-        }
-
-    } while (inputdevice->isOnline());
+        // loop thru until no further packets become available
+    } while (inputdevice->run() > 0);
 
     // *************************************************************************
     // Close input and outout devices
     // *************************************************************************
     inputdevice->close();
-    //outputdevice->close();
+    outputdevice->close();
 
     return 0;
 }
@@ -185,12 +180,17 @@ void DynWarden::sendPacket(const u_char* IPPacket) {
 
 void DynWarden::receivedPacket(const u_char* IPPacket) {
 
+    // Whats the time now ?
+    timespec ts1;
+    if ( clock_gettime(CLOCK_REALTIME, &ts1) == -1)
+        std::cerr << "clock_gettime fail: errno=" << errno << std::endl;
+    
     this->PacketCounter++;
 
     const struct ip* ipHeader = (struct ip*) IPPacket;
 
-    // Do we have an IPv4 packet ? If this is a IPv6 packet we skip the dynmica
-    // warden as IPv6 handling is not implemented yet.
+    // Do we have an IPv4 packet ? If this is a IPv6 packet we skip the dynamic
+    // warden as IPv6 handling is not implemented yet!!!
     if (ipHeader->ip_v == 4) {
 
         // *********************************************************************
@@ -220,35 +220,38 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
             // we will process the defined normalization rules on this packet 
             // before we proceed.
             // *****************************************************************
+            uint* flowInfo; //TODO: correct to proper struct type
             if (suspiciousFlows->Contain(flowID) == cuckoofilter::Ok) {
 
                 // Lookup FlowInfo - datastructure to keep information on the 
                 // various attributes and characterisitics of the IP flow.
-                
-                //TODO: Do the normalization job
-
+                flowInfo = NULL;
             } else {
 
                 // *************************************************************
                 // We have received an packet of an unknown flow. Let's check 
                 // with the sampling manager if this flow sould get monitored.
                 // *************************************************************
-                if (SamplingMgr.consider(IPPacket)) { // yes, if the flow is 
-                                                      //sampled
-                    
+                if (SamplingMgr.consider(IPPacket)) {// yes, if the flow is sampled
                     // Add flow to suspicious flow filter.
                     if (suspiciousFlows->Add(flowID) != cuckoofilter::Ok) {
-                        //printf("Error adding new flow to suspicious flow filter\n");
-                    } else {
-                        this->FlowCounter++;
-
+                        //printf("Error adding flow to suspicious flow filter\n");                        
+                    } else this->FlowCounter++;
+                }
+                flowInfo = NULL;
+            }
+            
+            // *****************************************************************
+            // If we have a valid FlowInfo structure than we will start the 
+            // Normalizer on this packet
+            // *****************************************************************
+            if (flowInfo != NULL ) {
                         // Pass IP packet to the normalizer component to execute 
                         // the various normalization techniques.
                         uint64_t* techVector = new u_int64_t(1);
 
                         NormManager.clean( techVector, IPPacket);
-                    }
-                }
+                
             }
         }
     }
@@ -257,5 +260,14 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
     // When all processing is completed we will send this packet to the output
     // *************************************************************************
     sendPacket(IPPacket);
+     
+    // Whats the time now ?
+    timespec ts2;
+    if ( clock_gettime(CLOCK_REALTIME, &ts2) == -1) {
+        std::cerr << "clock_gettime fail: errno=" << errno << std::endl;
+    } else {
+        delayCounter =+ (ts2.tv_nsec - ts1.tv_nsec);
+        delayCounter = delayCounter / 2;
+    }
 
 }

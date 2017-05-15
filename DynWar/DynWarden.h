@@ -14,6 +14,7 @@ private:
     cuckoofilter::CuckooFilter<unsigned __int128, 32, cuckoofilter::SingleTable>* suspiciousFlows;
     uint32_t PacketCounter = 0; // to count incomming packets
     uint32_t FlowCounter = 0; // to count unique incomming ip flows
+    uint32_t delayCounter = 0; // used to measure the delay in nano seconds 
 
     SamplingManager SamplingMgr;
     NormalizeManager NormManager;

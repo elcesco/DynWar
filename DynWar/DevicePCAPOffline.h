@@ -35,10 +35,10 @@ public:
 
     int open();
     int close();
-    bool hasData();
-    bool isOnline();
+//    bool hasData();
+//    bool isOnline();
 
-    int receivedPacket();
+    int run();
 };
 
 

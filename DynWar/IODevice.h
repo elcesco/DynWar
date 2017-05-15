@@ -7,8 +7,8 @@ public:
 	virtual ~IODevice();
 	virtual int open() = 0;
 	virtual int close() = 0;
-	virtual bool hasData() = 0;
-	virtual bool isOnline() = 0;
-	virtual int receivedPacket() = 0;
+//	virtual bool hasData() = 0;
+//	virtual bool isOnline() = 0;
+	virtual int run() = 0;
 };
 

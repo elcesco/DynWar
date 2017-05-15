@@ -33,5 +33,5 @@ bool SamplingManager::consider(const u_char* IPPacket) {
     
     // TODO Decide if flow should be sampled.
     
-    return true;
+    return false;
 }
