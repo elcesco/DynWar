@@ -8,6 +8,7 @@
 #include "DevicePCAPOffline.h"
 
 void DevicePCAPOffline::dlt_EN10MB(const u_char * packet) {
+    
     const struct ether_header* ethernetHeader = (struct ether_header*) (packet);
 
     /* Ethernet protocol ID's */
@@ -35,12 +36,13 @@ void DevicePCAPOffline::dlt_RAW(const u_char * packet) {
 
 }
 
-// ****************************************************************************
+// *****************************************************************************
 // Static PACKETHANDLER which is called back by pcap library for each packet 
 // chunk.
-// ***************************************************************************
+// *****************************************************************************
 
-void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
+void DevicePCAPOffline::packetHandler(u_char *userData, 
+        const struct pcap_pkthdr* pkthdr, const u_char* packet) {
 
     //We have store a pointer to class in the structure 
     //so we can get the pcap_descr of the open input
@@ -51,18 +53,19 @@ void DevicePCAPOffline::packetHandler(u_char *userData, const struct pcap_pkthdr
     // Received a packet from the input, so let's check
     // which link-layer header type we have received.
     // We can not assume its always an Ethernet type.
-    switch (pcap_datalink(pd->deviceInstance->pcap_descr)) {
+    switch (pcap_datalink(pd->deviceInstance->p)) {
 
         case DLT_EN10MB: //We got an standard Ethernet frame
             pd->deviceInstance->dlt_EN10MB(packet);
             break;
 
-        case DLT_RAW: //this is a pure IP frame
+        case DLT_RAW: //this is a raw IP frame
             pd->deviceInstance->dlt_RAW(packet);
             break;
 
         default:
-            cout << "DevicePCAPOffline: Error: Unknown datalink header." << pcap_datalink(pd->deviceInstance->pcap_descr) << endl;
+            cout << "DevicePCAPOffline: Error: Unknown datalink header."
+                    << pcap_datalink(pd->deviceInstance->p) << endl;
             break;
     }
 
@@ -88,22 +91,42 @@ DevicePCAPOffline::~DevicePCAPOffline() {
 // OPEN
 // ***************************************************************************
 
-int DevicePCAPOffline::open() {
-    cout << "DevicePCAPOffline: Opening PCAP in offline mode" << endl;
+int DevicePCAPOffline::open(bool dir) {
 
-    char errbuf[PCAP_ERRBUF_SIZE];
+    this->dir = dir; /* save file storage type for later when closing */
+    
+    char errbuf[PCAP_ERRBUF_SIZE]; /* error buffer for pcap library */
 
-    string inputfile = (ConfigurationManager::getInstance())->getInput();
+    if (dir) { // File open for input direction
 
-    // open capture file for offline processing
-    pcap_descr = pcap_open_offline(inputfile.c_str(), errbuf);
-    if (pcap_descr == NULL) {
-        cout << "DevicePCAPOffline: pcap_open_offline() failed: " << errbuf << endl;
-        return 1;
+        printf("DevicePCAPOffline: Opening PCAP file in read mode\n");
+
+        string ifile = (ConfigurationManager::getInstance())->getInput();
+
+        // open capture file for offline processing
+        p = pcap_open_offline(ifile.c_str(), errbuf);
+        if (p == NULL) {
+            printf("DevicePCAPOffline: pcap_open_offline() failed: %s", errbuf);
+            return -1;
+        }
+
+        return 0;
+    } else { // File open for output direction
+        printf("DevicePCAPOffline: Opening PCAP file in write mode\n");
+
+        string ofile = (ConfigurationManager::getInstance())->getOutput();
+
+        p = pcap_open_dead(DLT_RAW, 1 << 16);
+        dumper = pcap_dump_open(p, ofile.c_str());
+
+        if (dumper == NULL) {
+            printf("Error opening savefile %s with error: %s\n", ofile.c_str(),
+                    pcap_geterr(p));
+            return -1;
+        }
+        return 0;
     }
-    _online = true;
 
-    return 0;
 }
 
 // ***************************************************************************
@@ -111,47 +134,44 @@ int DevicePCAPOffline::open() {
 // ***************************************************************************
 
 int DevicePCAPOffline::close() {
-    cout << "DevicePCAPOffline: Closing PCAP in offline mode" << endl;
 
-    // pcap_close() closes the files associated with pcap_descr and deallocates resources.  
-    if (pcap_descr != NULL) {
-        pcap_close(pcap_descr);
-        _online = false;
-        return 0;
+    if (this->dir) { /* closing input file */
+        printf("PCAP: Closing PCAP input file\n");
+
+        // pcap_close() closes the files associated with pcap_descr and deallocates
+        // resources.  
+        pcap_close(p);
+
+    } else { /* closing output file */
+        printf("PCAP: Closing PCAP output file\n");
+        if (pcap_dump_flush(dumper) == -1)
+            printf("Error when flushing pcap savefile");
+
+        pcap_dump_close(dumper);
     }
 
-    return 1;
+    return 0;
 }
 
 // ***************************************************************************
-// HASDATA
+// RECEIVE data from pcap file
 // ***************************************************************************
 
-//bool DevicePCAPOffline::hasData() {
-//    return _online; //FIXME
-//}
-//
-//// ***************************************************************************
-//// ISONLINE
-//// ***************************************************************************
-//
-//bool DevicePCAPOffline::isOnline() {
-//    // For offline mode devices this functions returns the same as hasData(). However
-//    // in online mode there might be situations where the stream is still online and 
-//    // further packets are simply not received yet. In this case we just have to wait
-//    // for the next packet to arrive.
-//    return _online;
-//}
-
-// ***************************************************************************
-// RECEIVE
-// ***************************************************************************
-
-int DevicePCAPOffline::run() {
+int DevicePCAPOffline::receive() {
 
     // start packet processing loop, just like live capture
     pd.deviceInstance = this;
-    
-    return pcap_dispatch(pcap_descr, 1, this->packetHandler, (u_char*) & pd);
+
+    return pcap_dispatch(p, 1, this->packetHandler, (u_char*) & pd);
 }
 
+// ***************************************************************************
+// WRITE data to pcap file.
+// ***************************************************************************
+
+int DevicePCAPOffline::send(const ip* packet) {
+
+    //pcap_dump( (u_char*) dumper, NULL, (u_char*) packet);
+    
+    return 0;
+}

@@ -18,8 +18,10 @@ typedef struct {
 class DevicePCAPOffline :
 public IODevice {
 private:
-    pcap_t *pcap_descr;
-    bool _online = false;
+    pcap_t *p;
+    pcap_dumper_t *dumper;
+    bool dir; /* determines if this is a input- or output file */
+    
     char* pWarden = nullptr;
     pcap_data_t pd;
 
@@ -33,12 +35,11 @@ public:
     DevicePCAPOffline();
     ~DevicePCAPOffline();
 
-    int open();
+    int open(bool dir);
     int close();
-//    bool hasData();
-//    bool isOnline();
 
-    int run();
+    int receive();
+    int send(const ip* packet);
 };
 
 

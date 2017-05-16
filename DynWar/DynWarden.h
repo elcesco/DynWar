@@ -1,9 +1,11 @@
 #pragma once
 
 #include "cuckoofilter.h"
+
+#include "IODevice.h"
 #include "SamplingManager.h"
 #include "NormalizeManager.h"
-#include "DynWarden.h"
+
 
 class DynWarden {
 private:
@@ -16,6 +18,9 @@ private:
     uint32_t FlowCounter = 0; // to count unique incomming ip flows
     uint32_t delayCounter = 0; // used to measure the delay in nano seconds 
 
+    IODevice* inputdevice;
+    IODevice* outputdevice;
+    
     SamplingManager SamplingMgr;
     NormalizeManager NormManager;
 
@@ -29,7 +34,7 @@ public:
     static DynWarden *getInstance(); // get access to the one and only dynamic 
                                      // warden instance	
 
-    void sendPacket(const u_char* IPPacket);
+    //void sendPacket(const u_char* IPPacket);
     void receivedPacket(const u_char * IPPacket);
 
 };

@@ -1,4 +1,5 @@
 #include<time.h>
+
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 
@@ -74,19 +75,19 @@ int DynWarden::start() {
     // *************************************************************************
     // initialize input device
     // *************************************************************************
-    IODevice* inputdevice = (IODevice*) (new DevicePCAPOffline());
-    inputdevice->open();
+    inputdevice = (IODevice*) (new DevicePCAPOffline());
+    inputdevice->open(true);
 
     // *************************************************************************
     // initialize output
     // *************************************************************************
-    IODevice* outputdevice = (IODevice*)(new DevicePCAPOffline());
-    outputdevice->open();
+    outputdevice = (IODevice*)(new DevicePCAPOffline());
+    outputdevice->open(false);
 
     // start processing incomming packets
     do {
         // loop thru until no further packets become available
-    } while (inputdevice->run() > 0);
+    } while (inputdevice->receive() > 0);
 
     // *************************************************************************
     // Close input and outout devices
@@ -171,12 +172,12 @@ unsigned __int128* DynWarden::getFlowIDv4(const ip* ipHeader) {
     return flowID;
 }
 
-void DynWarden::sendPacket(const u_char* IPPacket) {
-
-    // TODO: Add the code to send the packet to the network again.
-
-    return;
-}
+//void DynWarden::sendPacket(const u_char* IPPacket) {
+//
+//    // TODO: Add the code to send the packet to the network again.
+//
+//    return;
+//}
 
 void DynWarden::receivedPacket(const u_char* IPPacket) {
 
@@ -211,7 +212,7 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
             // the packet.
             // *****************************************************************
             if (innocentFlows->Contain(flowID) == cuckoofilter::Ok) {
-                sendPacket(IPPacket);
+                outputdevice->send(ipHeader);
                 return;
             }
 
@@ -259,7 +260,7 @@ void DynWarden::receivedPacket(const u_char* IPPacket) {
     // *************************************************************************
     // When all processing is completed we will send this packet to the output
     // *************************************************************************
-    sendPacket(IPPacket);
+    outputdevice->send(ipHeader);
      
     // Whats the time now ?
     timespec ts2;
