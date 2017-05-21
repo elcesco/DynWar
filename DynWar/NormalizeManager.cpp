@@ -28,7 +28,7 @@ NormalizeManager::NormalizeManager() {
 NormalizeManager::~NormalizeManager() {
 }
 
-bool NormalizeManager::clean(const u_int64_t * techVector, const u_char* IPPacket) {
+bool NormalizeManager::clean(const u_int64_t * techVector, ip* ip_packet) {
 
     switch (*techVector) {
         case 0: {

@@ -26,7 +26,7 @@ public:
     static SamplingManager *getInstance();  // get access to the one and only 
                                             // sampling manager instance
 
-    bool consider(const u_char* IPPacket);
+    bool consider(ip* ip_packet);
     
 private:
     static SamplingManager *s_instance; //link to the globally available instance

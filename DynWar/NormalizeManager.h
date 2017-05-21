@@ -11,17 +11,20 @@
  * Created on May 10, 2017, 10:22 PM
  */
 
+#pragma once
+
 #ifndef NORMALIZER_H
 #define NORMALIZER_H
 
 #include <cstdint>
+#include <netinet/ip.h>
 
 class NormalizeManager {
 public:
     NormalizeManager();
     virtual ~NormalizeManager();
     
-    bool clean(const u_int64_t * techVector, const u_char* IPPacket);
+    bool clean(const u_int64_t * techVector, ip* ip_packet);
     
 private:
 

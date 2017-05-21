@@ -38,7 +38,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/ConfigurationManager.o \
 	${OBJECTDIR}/DevicePCAPOffline.o \
 	${OBJECTDIR}/DynWarden.o \
-	${OBJECTDIR}/IODevice.o \
 	${OBJECTDIR}/NormalizeManager.o \
 	${OBJECTDIR}/SamplingManager.o \
 	${OBJECTDIR}/main.o
@@ -82,11 +81,6 @@ ${OBJECTDIR}/DynWarden.o: DynWarden.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O3 -I../../../cuckoofilter/src -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/DynWarden.o DynWarden.cpp
-
-${OBJECTDIR}/IODevice.o: IODevice.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -O3 -I../../../cuckoofilter/src -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/IODevice.o IODevice.cpp
 
 ${OBJECTDIR}/NormalizeManager.o: NormalizeManager.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -29,7 +29,7 @@ SamplingManager* SamplingManager::getInstance() {
 SamplingManager::~SamplingManager() {
 }
 
-bool SamplingManager::consider(const u_char* IPPacket) {
+bool SamplingManager::consider(ip* ip_packet) {
     
     // TODO Decide if flow should be sampled.
     

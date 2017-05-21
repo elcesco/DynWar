@@ -1,10 +1,14 @@
 #pragma once
 
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+
 #include "cuckoofilter.h"
 
-#include "IODevice.h"
 #include "SamplingManager.h"
 #include "NormalizeManager.h"
+#include "DevicePCAPOffline.h"
 
 
 class DynWarden {
@@ -18,14 +22,18 @@ private:
     uint32_t FlowCounter = 0; // to count unique incomming ip flows
     uint32_t delayCounter = 0; // used to measure the delay in nano seconds 
 
-    IODevice* inputdevice;
-    IODevice* outputdevice;
+    DevicePCAPOffline* inputdevice;
+    DevicePCAPOffline* outputdevice;
     
     SamplingManager SamplingMgr;
     NormalizeManager NormManager;
 
-    unsigned __int128* getFlowIDv4(const ip* ipHeader);
+    unsigned __int128* getFlowIDv4(ip* ip_hdr);
 
+    //void dlt_EN10MB(const u_char *packet);
+    //void dlt_RAW(const u_char *packet);
+
+    
 public:
     DynWarden();
     ~DynWarden();
@@ -35,7 +43,7 @@ public:
                                      // warden instance	
 
     //void sendPacket(const u_char* IPPacket);
-    void receivedPacket(const u_char * IPPacket);
+    void receivedPacket(pcap_umbrella_t * pum);
 
 };
 
